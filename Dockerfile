@@ -1,3 +1,5 @@
-FROM hermsi/alpine-sshd:latest
-RUN sed -i 's/#ClientAliveInterval 0/ClientAliveInterval 30/g' /etc/ssh/sshd_config
-RUN apk add --no-cache vim git
+FROM alpine:latest
+COPY entrypoint.sh /
+RUN chmod 777 /entrypoint.sh
+RUN apk update && apk upgrade && apk add --no-cache vim git openssh-server
+ENTRYPOINT ["/entrypoint.sh"]
