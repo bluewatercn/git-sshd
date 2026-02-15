@@ -1,3 +1,3 @@
 FROM hermsi/alpine-sshd:latest
-sed 's/#ClientAliveInterval 0/ClientAliveInterval 30/g' /etc/ssh/sshd_config
+RUN sed 's/#ClientAliveInterval 0/ClientAliveInterval 30/g' /etc/ssh/sshd_config
 RUN apk add --no-cache vim git
