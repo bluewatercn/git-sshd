@@ -53,6 +53,10 @@ if [[ ! -e /root/.ssh  ]];then
         mkdir -p /root/.ssh
 fi
 ssh-keygen -t ed25519 -C $GITHUBEMAIL -f /root/.ssh/id_ed25519 -N $SECRETPASSPHRASE -q
+curl -H "Authorization: token ${GITHUBTOKEN}" \
+     -H "Accept: application/vnd.github+json" \
+     https://api.github.com/user/keys \
+     -d "{\"title\":\"my-server\",\"key\":\"$(cat /root/.ssh/id_ed25519.pub)\"}"
 
 
 
