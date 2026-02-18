@@ -3,3 +3,7 @@ GITHUBTOKEN
 GITHUBEMAIL
 ROOT_PASSWORD
 SECRETPASSPHRASE
+
+################ Set to ssh connection ####################
+git remote set-url origin git@github.com:bluewatercn/git-sshd.git
+
