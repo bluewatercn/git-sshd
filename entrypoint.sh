@@ -7,7 +7,6 @@ GITHUBEMAIL=${GITHUBEMAIL:-}
 GITHUBTOKEN=${GITHUBTOKEN:-}
 SECRETPASSPHRASE=${SECRETPASSPHRASE:-}
 
-ssh-keygen -A 1>/dev/null
 
 function token_exists {
 if [[ "$GITHUBTOKEN" == ''  ]];then
@@ -36,11 +35,14 @@ if [[ "$SECRETPASSPHRASE" == ''  ]];then
 fi
 }
 
-
+function main {
 rootpassword_exists
 email_exists
 token_exists
 secretpassphrase_exists
+
+#generate key
+ssh-keygen -A 1>/dev/null
 
 #set root password login and heartbeat
 echo "root:${ROOT_PASSWORD}" | chpasswd &>/dev/null
@@ -63,3 +65,6 @@ git config --global user.name $(hostname)"-"$(whoami)
 
 # do not detach (-D), log to stderr (-e), passthrough other arguments
 exec /usr/sbin/sshd -D -e "$@"
+}
+
+main
