@@ -57,7 +57,8 @@ curl -H "Authorization: token ${GITHUBTOKEN}" \
      -H "Accept: application/vnd.github+json" \
      https://api.github.com/user/keys \
      -d "{\"title\":\"my-server\",\"key\":\"$(cat /root/.ssh/id_ed25519.pub)\"}"
-
+git config --global user.email $GITHUBEMAIL
+git config --global user.name $(hostname)"-"$(whoami)
 
 
 # do not detach (-D), log to stderr (-e), passthrough other arguments
