@@ -3,34 +3,42 @@
 set -eu
 
 ROOT_PASSWORD=${ROOT_PASSWORD:-}
-TOKEN=${TOKEN:-}
+GITHUBEMAIL=${GITHUBEMAIL:-}
+GITHUBTOKEN=${GITHUBTOKEN:-}
 SECRETPASSPHRASE=${SECRETPASSPHRASE:-}
 
 ssh-keygen -A 1>/dev/null
 
 function token_exists {
-if [[ "$TOKEN" == ''  ]];then
-	echo "token must be set"
-	return 1
+if [[ "$GITHUBTOKEN" == ''  ]];then
+        echo "GITHUBTOKEN must be set"
+        return 1
 fi
 }
 
+function email_exists {
+if [[ "$GITHUBEMAIL" == ''  ]];then
+        echo "GITHUBEMAIL must be set"
+        return 1
+fi
+}
 function rootpassword_exists {
 if [[ "$ROOT_PASSWORD" == ''  ]];then
-	echo "root password must be set"
-	return 1
+        echo "ROOT_PASSWORD must be set"
+        return 1
 fi
 }
 
 function secretpassphrase_exists {
 if [[ "$SECRETPASSPHRASE" == ''  ]];then
-	echo "SECRETPASSPHRASE must be set"
-	return 1
+        echo "SECRETPASSPHRASE must be set"
+        return 1
 fi
 }
 
 
 rootpassword_exists
+email_exists
 token_exists
 secretpassphrase_exists
 
@@ -42,9 +50,9 @@ sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/g' /etc/ssh/ssh
 
 #set git token login
 if [[ ! -e /root/.ssh  ]];then
-	mkdir -p /root/.ssh
+        mkdir -p /root/.ssh
 fi
-ssh-keygen -t ed25519 -f /root/.ssh/id_ed25519 -N $SECRETPASSPHRASE -q
+ssh-keygen -t ed25519 -C $GITHUBEMAIL -f /root/.ssh/id_ed25519 -N $SECRETPASSPHRASE -q
 
 
 
