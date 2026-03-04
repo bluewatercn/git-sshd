@@ -21,10 +21,10 @@ if [[  "$GITHOST" != "github" && "$GITHOST" != "gitlab"  ]];then
 	echo "arg GITHOST must be set to gitlab or github"
 	return 1
 elif [[ "$GITHOST" == "github" ]];then
-	GH_TOKEN=$TOKEN
+	echo GH_TOKEN=$TOKEN > /root/.bashrc
 	return 0
 elif [[ "$GITHOST" == "gitlab" ]];then
-	GH_TOKEN=$TOKEN
+	echo GH_TOKEN=$TOKEN > /root/.bashrc
 	return 0
 fi
 }
