@@ -39,7 +39,7 @@ function remote_git_host_autokey_set {
                      -d "{\"title\":\"My Automated Key\",\"key\":\"$(cat /root/.ssh/id_ed25519.pub)\"}"
 		         ;;
 		 "gitlab")
-		 glab ssh-key add $(cat /root/.ssh/id_ed25519.pub) --title "My Automated Key"
+		 glab ssh-key add '/root/.ssh/id_ed25519.pub' --title "My Automated Key"
 			 ;;
 	 esac
 }
