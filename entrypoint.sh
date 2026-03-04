@@ -7,6 +7,7 @@ EMAIL=${EMAIL:-}
 TOKEN=${TOKEN:-}
 SECRETPASSPHRASE=${SECRETPASSPHRASE:-}
 GITHOST=${GITHOST:-}
+GH_TOKEN=${GH_TOKEN:-}
 
 function basic_arg_check {
 if [[ "$TOKEN" == '' || "$EMAIL" == '' || "$ROOT_PASSWORD" == '' || "$SECRETPASSPHRASE" == '' ]];then
@@ -19,6 +20,12 @@ function git_host_arg_check {
 if [[  "$GITHOST" != "github" && "$GITHOST" != "gitlab"  ]];then
 	echo "arg GITHOST must be set to gitlab or github"
 	return 1
+elif [[ "$GITHOST" == "github" ]];then
+	GH_TOKEN=$TOKEN
+	return 0
+elif [[ "$GITHOST" == "gitlab" ]];then
+	GH_TOKEN=$TOKEN
+	return 0
 fi
 }
 
