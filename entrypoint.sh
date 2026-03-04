@@ -24,6 +24,7 @@ elif [[ "$GITHOST" == "github" ]];then
 	echo export GH_TOKEN=$TOKEN > /root/.bashrc
 	return 0
 elif [[ "$GITHOST" == "gitlab" ]];then
+	export GITLAB_TOKEN=$TOKEN
 	echo export GITLAB_TOKEN=$TOKEN > /root/.bashrc
 	echo export GITLAB_HOST='gitlab.com' >> /root/.bashrc
 	return 0
