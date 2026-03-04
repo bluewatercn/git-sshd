@@ -3,65 +3,66 @@
 set -eu
 
 ROOT_PASSWORD=${ROOT_PASSWORD:-}
-GITHUBEMAIL=${GITHUBEMAIL:-}
-GITHUBTOKEN=${GITHUBTOKEN:-}
+EMAIL=${EMAIL:-}
+TOKEN=${TOKEN:-}
 SECRETPASSPHRASE=${SECRETPASSPHRASE:-}
+GITHOST=${GITHOST:-}
 
-
-function token_exists {
-if [[ "$GITHUBTOKEN" == ''  ]];then
-        echo "GITHUBTOKEN must be set"
+function basic_arg_check {
+if [[ "$TOKEN" == '' || "$EMAIL" == '' || "$ROOT_PASSWORD" == '' || "$SECRETPASSPHRASE" == '' ]];then
+        echo "4 basic args TOKEN/EMAIL/ROOT_PASSWORD/SECRETPASSPHRASE must be set"
         return 1
 fi
 }
 
-function email_exists {
-if [[ "$GITHUBEMAIL" == ''  ]];then
-        echo "GITHUBEMAIL must be set"
-        return 1
-fi
-}
-function rootpassword_exists {
-if [[ "$ROOT_PASSWORD" == ''  ]];then
-        echo "ROOT_PASSWORD must be set"
-        return 1
+function git_host_arg_check {
+if [[  "$GITHOST" != "github" && "$GITHOST" != "gitlab"  ]];then
+	echo "arg GITHOST must be set to gitlab or github"
+	return 1
 fi
 }
 
-function secretpassphrase_exists {
-if [[ "$SECRETPASSPHRASE" == ''  ]];then
-        echo "SECRETPASSPHRASE must be set"
-        return 1
+function remote_git_host_autokey_set {
+        case "$GITHOST" in
+        	"github")
+                curl "https://api.github.com/user/keys" \
+	             -H "Authorization: token ${TOKEN}" \
+                     -H "Accept: application/vnd.github+json" \
+                     -d "{\"title\":\"My Automated Key\",\"key\":\"$(cat /root/.ssh/id_ed25519.pub)\"}"
+		         ;;
+		 "gitlab")
+		 curl "https://gitlab.com/api/v4/user/keys" \
+                     -H "PRIVATE-TOKEN: ${TOKEN}" \
+                     -H "Content-Type: application/json" \
+                     -d "{\"title\": \"My Automated Key\",\"key\": \"$(cat /root/.ssh/id_ed25519.pub)\"}"
+		 #glab ssh-key add $(cat /root/.ssh/id_ed25519.pub) --title "My Automated Key"
+			 ;;
+	 esac
+}
+
+function localhost_ssh_key_generate {
+ssh-keygen -A 1>/dev/null
+if [[ ! -e /root/.ssh  ]];then
+        mkdir -p /root/.ssh
 fi
+ssh-keygen -t ed25519 -C $EMAIL -f /root/.ssh/id_ed25519 -N $SECRETPASSPHRASE -q
 }
 
 function main {
-rootpassword_exists
-email_exists
-token_exists
-secretpassphrase_exists
+basic_arg_check
+git_host_arg_check
+localhost_ssh_key_generate
+remote_git_host_autokey_set
 
-#generate key
-ssh-keygen -A 1>/dev/null
+#set git config global
+git config --global user.email $EMAIL
+git config --global user.name $(hostname)"-"$(whoami)
 
 #set root password login and heartbeat
 echo "root:${ROOT_PASSWORD}" | chpasswd &>/dev/null
 sed -i "s/#PermitRootLogin.*/PermitRootLogin\ yes/" /etc/ssh/sshd_config
 sed -i 's/#ClientAliveInterval 0/ClientAliveInterval 20/g' /etc/ssh/sshd_config
 sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/g' /etc/ssh/sshd_config
-
-#set git token login
-if [[ ! -e /root/.ssh  ]];then
-        mkdir -p /root/.ssh
-fi
-ssh-keygen -t ed25519 -C $GITHUBEMAIL -f /root/.ssh/id_ed25519 -N $SECRETPASSPHRASE -q
-curl -H "Authorization: token ${GITHUBTOKEN}" \
-     -H "Accept: application/vnd.github+json" \
-     https://api.github.com/user/keys \
-     -d "{\"title\":\"my-server\",\"key\":\"$(cat /root/.ssh/id_ed25519.pub)\"}"
-git config --global user.email $GITHUBEMAIL
-git config --global user.name $(hostname)"-"$(whoami)
-
 
 # do not detach (-D), log to stderr (-e), passthrough other arguments
 exec /usr/sbin/sshd -D -e "$@"

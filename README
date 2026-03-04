@@ -1,9 +1,7 @@
-There are 4 vars,default value is null:
+There are 4 env,default value is null:
 GITHUBTOKEN
 GITHUBEMAIL
 ROOT_PASSWORD
 SECRETPASSPHRASE
 
-################ Set to ssh connection ####################
-git remote set-url origin git@github.com:bluewatercn/git-sshd.git
-
+and env GITHOST must set to github or gitlab
