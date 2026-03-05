@@ -43,8 +43,8 @@ function remote_git_host_autokey_set {
 		         ;;
 		 "gitlab")
 			echo 'test'
-                        . /root/.bashrc
-			glab ssh-key add '/root/.ssh/id_ed25519.pub' --title "My Automated Key: $(date +'%y-%m-%d %H:%M:%S')"
+                        #. /root/.bashrc
+			#glab ssh-key add '/root/.ssh/id_ed25519.pub' --title "My Automated Key: $(date +'%y-%m-%d %H:%M:%S')"
 			;;
 	 esac
 }
