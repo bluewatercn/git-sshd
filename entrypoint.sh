@@ -8,6 +8,8 @@ TOKEN=${TOKEN:-}
 SECRETPASSPHRASE=${SECRETPASSPHRASE:-}
 GITHOST=${GITHOST:-}
 GH_TOKEN=${GH_TOKEN:-}
+GITLAB_TOKEN=${GITLAB_TOKEN:-}
+GITLAB_HOST=${GITLAB_HOST:-}
 
 function basic_arg_check {
 if [[ "$TOKEN" == '' || "$EMAIL" == '' || "$ROOT_PASSWORD" == '' || "$SECRETPASSPHRASE" == '' ]];then
@@ -34,15 +36,15 @@ fi
 function remote_git_host_autokey_set {
         case "$GITHOST" in
         	"github")
-                curl "https://api.github.com/user/keys" \
-	             -H "Authorization: token ${TOKEN}" \
-                     -H "Accept: application/vnd.github+json" \
-                     -d "{\"title\":\"My Automated Key\",\"key\":\"$(cat /root/.ssh/id_ed25519.pub)\"}"
+                        curl "https://api.github.com/user/keys" \
+	                     -H "Authorization: token ${TOKEN}" \
+                             -H "Accept: application/vnd.github+json" \
+			     -d "{\"title\":\"My Automated Key-$(date +"%y:%m:%d %h:%M:%S")\",\"key\":\"$(cat /root/.ssh/id_ed25519.pub)\"}"
 		         ;;
 		 "gitlab")
-			 echo 'test'
-		 #glab ssh-key add '/root/.ssh/id_ed25519.pub' --title "My Automated Key"
-			 ;;
+			echo 'test'
+			glab ssh-key add '/root/.ssh/id_ed25519.pub' --title "My Automated Key""-"$(date +"%y:%m:%d %h:%M:%S")
+			;;
 	 esac
 }
 
